@@ -1,0 +1,236 @@
+#![enable(implicit_some)]
+Prefab(
+    entities: [
+        // Old Man
+        PrefabEntity(
+            data: AnimationPrefab(
+                // SpriteScenePrefab
+                sprite_scene: (
+                    // SpriteSheetPrefab with index 0
+                    sheet: Sheet(
+                        // TexturePrefab
+                        texture: File("sprites/old_man/old_man.png", (
+                            "IMAGE", (
+                                sampler_info: (
+                                    min_filter: Nearest,
+                                    mag_filter: Nearest,
+                                    mip_filter: Nearest,
+                                    wrap_mode: (Tile, Tile, Tile),
+                                    lod_bias: (0),
+                                    lod_range: (
+                                        start: ( 0 ),
+                                        end: ( 8000 ),
+                                    ),
+                                    comparison: None,
+                                    border: (0),
+                                    anisotropic: Off,
+                                    normalized: true,
+                                ),
+                            ),
+                        )),
+                        sprites: [
+                            List((
+                                texture_width: 150,
+                                texture_height: 196,
+                                sprites: [
+                                    // Walk: 22x34
+                                    (x: 0, y: 0, width: 22, height: 34),
+                                    (x: 22, y: 0, width: 22, height: 34),
+                                    (x: 44, y: 0, width: 22, height: 34),
+                                    (x: 66, y: 0, width: 22, height: 34),
+                                    (x: 88, y: 0, width: 22, height: 34),
+                                    (x: 110, y: 0, width: 22, height: 34),
+
+                                    // Attack: 25x32
+                                    (x: 0, y: 34, width: 25, height: 32),
+                                    (x: 25, y: 34, width: 25, height: 32),
+                                    (x: 50, y: 34, width: 25, height: 32),
+                                    (x: 75, y: 34, width: 25, height: 32),
+
+                                    // Death: 32x32
+                                    (x: 0, y: 66, width: 32, height: 32),
+                                    (x: 32, y: 66, width: 32, height: 32),
+                                    (x: 64, y: 66, width: 32, height: 32),
+                                    (x: 96, y: 66, width: 32, height: 32),
+
+                                    // Hit: 22x32
+                                    (x: 0, y: 98, width: 22, height: 32),
+                                    (x: 22, y: 98, width: 22, height: 32),
+
+                                    // Idle: 20x32
+                                    (x: 0, y: 130, width: 20, height: 32),
+                                    (x: 20, y: 130, width: 20, height: 32),
+                                    (x: 40, y: 130, width: 20, height: 32),
+                                    (x: 60, y: 130, width: 20, height: 32),
+
+                                    // Jump: 30x34
+                                    (x: 0, y: 162, width: 30, height: 34),
+                                    (x: 30, y: 162, width: 30, height: 34),
+                                    (x: 60, y: 162, width: 30, height: 34),
+                                    (x: 90, y: 162, width: 30, height: 34),
+                                    (x: 120, y: 162, width: 30, height: 34),
+                                ],
+                            )),
+                        ],
+                        // optional
+                        name: "old_man",
+                    ),
+                    // SpriteRenderPrefab
+                    render: (
+                        sheet: "old_man",
+                        sprite_number: 0,
+                    ),
+                ),
+                // AnimationSetPrefab
+                animation_set: (
+                    animations: [
+                        (
+                            // AnimationId
+                            Walk,
+                            (
+                                samplers: [
+                                    (
+                                        0,
+                                        // Only SpriteIndex channel allowed for SpriteRender in AnimationSetPrefab
+                                        SpriteIndex,
+                                        (
+                                            // Time of key frames
+                                            input: [0.0, 0.15, 0.35, 0.5, 0.65, 0.85, 1.0],
+                                            // Sprite indexes from SpriteSheet for key frames
+                                            output: [0, 1, 2, 3, 4, 5],
+                                            // Sprites can only ever be animated with Step
+                                            function: Step,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ),
+                        (
+                            // AnimationId
+                            Attack,
+                            (
+                                samplers: [
+                                    (
+                                        0,
+                                        // Only SpriteIndex channel allowed for SpriteRender in AnimationSetPrefab
+                                        SpriteIndex,
+                                        (
+                                            // Time of key frames
+                                            input: [0.0, 0.16, 0.48, 0.64, 0.8],
+                                            // Sprite indexes from SpriteSheet for key frames
+                                            output: [6, 7, 8, 9],
+                                            // Sprites can only ever be animated with Step
+                                            function: Step,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ),
+                        (
+                            // AnimationId
+                            Death,
+                            (
+                                samplers: [
+                                    (
+                                        0,
+                                        // Only SpriteIndex channel allowed for SpriteRender in AnimationSetPrefab
+                                        SpriteIndex,
+                                        (
+                                            // Time of key frames
+                                            input: [0.0, 0.2, 0.5, 0.7, 1.0],
+                                            // Sprite indexes from SpriteSheet for key frames
+                                            output: [10, 11, 12, 13],
+                                            // Sprites can only ever be animated with Step
+                                            function: Step,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ),
+                        (
+                            // AnimationId
+                            Hitted,
+                            (
+                                samplers: [
+                                    (
+                                        0,
+                                        // Only SpriteIndex channel allowed for SpriteRender in AnimationSetPrefab
+                                        SpriteIndex,
+                                        (
+                                            // Time of key frames
+                                            input: [0., 0.2, 0.4],
+                                            // Sprite indexes from SpriteSheet for key frames
+                                            output: [14, 15],
+                                            // Sprites can only ever be animated with Step
+                                            function: Step,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ),
+                        (
+                            // AnimationId
+                            Idle,
+                            (
+                                samplers: [
+                                    (
+                                        0,
+                                        // Only SpriteIndex channel allowed for SpriteRender in AnimationSetPrefab
+                                        SpriteIndex,
+                                        (
+                                            // Time of key frames
+                                            input: [0.0, 0.2, 0.4, 0.6, 0.8],
+                                            // Sprite indexes from SpriteSheet for key frames
+                                            output: [16, 17, 18, 19],
+                                            // Sprites can only ever be animated with Step
+                                            function: Step,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ),
+                        (
+                            // AnimationId
+                            Jump,
+                            (
+                                samplers: [
+                                    (
+                                        0,
+                                        // Only SpriteIndex channel allowed for SpriteRender in AnimationSetPrefab
+                                        SpriteIndex,
+                                        (
+                                            // Time of key frames
+                                            input: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0],
+                                            // Sprite indexes from SpriteSheet for key frames
+                                            output: [20, 21, 22, 23, 24],
+                                            // Sprites can only ever be animated with Step
+                                            function: Step,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ),
+                    ],
+                ),
+            ),
+        ),
+    ],
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
