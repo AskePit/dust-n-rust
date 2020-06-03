@@ -1,6 +1,7 @@
 (
   axes: {
     "move": Emulated(pos: Key(Right), neg: Key(Left)),
+    "move_vertical": Emulated(pos: Key(Up), neg: Key(Down)),
   },
   actions: {
       "anim_change": [

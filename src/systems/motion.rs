@@ -20,7 +20,8 @@ impl<'s> System<'s> for MotionSystem {
         let (mut transforms, motions, time) = data;
 
         for (transform, motion) in (&mut transforms, &motions).join() {
-			transform.prepend_translation_x(motion.velocity.x * time.delta_seconds()*60.);
+            transform.prepend_translation_x(motion.velocity.x * time.delta_seconds());
+            transform.prepend_translation_y(motion.velocity.y * time.delta_seconds());
         }
     }
 }

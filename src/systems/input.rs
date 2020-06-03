@@ -45,6 +45,8 @@ impl PlayerInputSystem {
     }
 }
 
+static SPEED: f32 = 60.0;
+
 impl<'s> System<'s> for PlayerInputSystem {
     type SystemData = (
         WriteStorage<'s, Player>,
@@ -61,7 +63,9 @@ impl<'s> System<'s> for PlayerInputSystem {
             // axises
             {
                 let move_input = input.axis_value("move").expect("Move action exists");
-                motion.velocity.x = move_input;
+                let vertical_move_input = input.axis_value("move_vertical").expect("Move action exists");
+                motion.velocity.x = move_input * SPEED;
+                motion.velocity.y = vertical_move_input * SPEED;
             }
 
             // actions
