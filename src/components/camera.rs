@@ -16,7 +16,7 @@ pub fn load_camera(world: &mut World) {
 
     world
         .create_entity()
-        .with(Camera::standard_2d(width/2., height/2.))
+        .with(Camera::standard_2d(width, height))
         .with(transform)
         .build();
 }

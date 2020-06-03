@@ -5,6 +5,7 @@ use amethyst::{
     core::{
         Transform,
         WithNamed,
+        math::Vector3,
     },
     prelude::{Builder, WorldExt},
 };
@@ -47,6 +48,8 @@ pub fn load_player(world: &mut World, prefab: Handle<Prefab<AnimationPrefab>>) {
     let mut transform = Transform::default();
     transform.set_translation_x(0.0);
     transform.set_translation_y(0.0);
+
+    transform.set_scale(Vector3::new(2.0, 2.0, 2.0));
 
     world
         .create_entity()
