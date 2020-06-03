@@ -5,6 +5,7 @@ use amethyst::{
 };
 
 use crate::components::{Player, PlayerState, Motion};
+use crate::systems::motion::SPEED;
 
 static COOLDOWN_TIME: f32 = 0.5;
 
@@ -25,6 +26,7 @@ fn change_state(state: PlayerState) -> PlayerState
         Attacking => Hitted,
         Hitted => Dead,
         Dead => Idling,
+        _ => Idling,
     }
 }
 
@@ -45,9 +47,6 @@ impl PlayerInputSystem {
     }
 }
 
-static SPEED: f32 = 120.0;
-static JUMP_SPEED: f32 = 120.0;
-
 impl<'s> System<'s> for PlayerInputSystem {
     type SystemData = (
         WriteStorage<'s, Player>,
@@ -64,9 +63,7 @@ impl<'s> System<'s> for PlayerInputSystem {
             // axises
             {
                 let move_input = input.axis_value("move").expect("Move action exists");
-                let vertical_move_input = input.axis_value("move_vertical").expect("Move action exists");
                 motion.velocity.x = move_input * SPEED;
-                motion.velocity.y = vertical_move_input * JUMP_SPEED;
             }
 
             // actions
@@ -75,11 +72,21 @@ impl<'s> System<'s> for PlayerInputSystem {
                     return;
                 }
 
-                let change = input.action_is_down("anim_change").expect("Jump action exists");
-
-                if change
+                if input.action_is_down("anim_change").expect("animation change action exists")
                 {
                     player.state = change_state(player.state);
+                    self.set_actions_cooldown();
+                }
+
+                if input.action_is_down("jump").expect("Jump action exists")
+                {
+                    motion.jump_trigger = true;
+                    self.set_actions_cooldown();
+                }
+
+                if input.action_is_down("lift").expect("Lift action exists")
+                {
+                    motion.lift_trigger = true;
                     self.set_actions_cooldown();
                 }
             }

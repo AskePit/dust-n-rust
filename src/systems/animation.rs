@@ -86,12 +86,14 @@ impl<'s> System<'s> for PlayerAnimationSystem {
             &mut animation_control_sets,
         ).join()
         {
+            use PlayerState::*;
+
             let new_animation_id = match player.state {
-                PlayerState::Walking => AnimationId::Walk,
-                PlayerState::Jumping => AnimationId::Jump,
-                PlayerState::Attacking => AnimationId::Attack,
-                PlayerState::Hitted => AnimationId::Hitted,
-                PlayerState::Dead => AnimationId::Death,
+                Walking => AnimationId::Walk,
+                Jumping | JumpStart | JumpEnd => AnimationId::Jump,
+                Attacking => AnimationId::Attack,
+                Hitted => AnimationId::Hitted,
+                Dead => AnimationId::Death,
                 _ => AnimationId::Idle,
             };
 

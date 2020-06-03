@@ -18,7 +18,9 @@ use crate::{
 pub enum PlayerState {
     Idling,
     Walking,
+    JumpStart,
     Jumping,
+    JumpEnd,
     Attacking,
     Hitted,
     Dead,
