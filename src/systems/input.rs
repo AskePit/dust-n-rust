@@ -45,7 +45,8 @@ impl PlayerInputSystem {
     }
 }
 
-static SPEED: f32 = 60.0;
+static SPEED: f32 = 120.0;
+static JUMP_SPEED: f32 = 120.0;
 
 impl<'s> System<'s> for PlayerInputSystem {
     type SystemData = (
@@ -65,7 +66,7 @@ impl<'s> System<'s> for PlayerInputSystem {
                 let move_input = input.axis_value("move").expect("Move action exists");
                 let vertical_move_input = input.axis_value("move_vertical").expect("Move action exists");
                 motion.velocity.x = move_input * SPEED;
-                motion.velocity.y = vertical_move_input * SPEED;
+                motion.velocity.y = vertical_move_input * JUMP_SPEED;
             }
 
             // actions
