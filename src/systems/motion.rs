@@ -9,11 +9,11 @@ use crate::components::Motion;
 #[derive(Default)]
 pub struct MotionSystem;
 
-pub static SPEED: f32 = 120.0;
-static GRAVITY: f32 = 1100.;
-static JUMP_IMPULSE: f32 = 320.0;
-static JUMP_DECELL: f32 = 1100.;
-static LIFT_HEIGHT: f32 = 50.;
+pub const SPEED: f32 = 120.0;
+const GRAVITY: f32 = 1100.;
+const JUMP_IMPULSE: f32 = 320.0;
+const LIFT_HEIGHT: f32 = 50.;
+const GROUND_LEVEL: f32 = 0.;
 
 impl<'s> System<'s> for MotionSystem {
     type SystemData = (
@@ -40,24 +40,18 @@ impl<'s> System<'s> for MotionSystem {
                 motion.lift_trigger = false;
             }
 
-            let dy = if motion.velocity.y.abs() > f32::EPSILON {
-                motion.velocity.y -= JUMP_DECELL*dt;
-                motion.velocity.y
-            } else {
-                motion.velocity.y -= GRAVITY*dt;
-                motion.velocity.y
-            };
-
+            motion.velocity.y -= GRAVITY * dt;
             let y = transform.translation().y;
 
-            if motion.velocity.y < 0. && y.abs() <= f32::EPSILON {
-                motion.velocity.y = 0.
+            if motion.velocity.y < 0.0 && y <= GROUND_LEVEL {
+                motion.velocity.y = 0.0;
+                transform.set_translation_y(GROUND_LEVEL);
+            } else {
+                transform.set_translation_y(
+                    (y + motion.velocity.y * dt)
+                    .max(GROUND_LEVEL)
+                );
             }
-
-            transform.set_translation_y(
-                (y + dy * dt)
-                .max(0.0)
-            );
         }
     }
 }
