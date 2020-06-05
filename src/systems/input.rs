@@ -1,11 +1,47 @@
+use std::fmt::{self, Display};
+
 use amethyst::{
     ecs::{Join, Read, System, WriteStorage},
-    input::{InputHandler, StringBindings},
+    input::{InputHandler, BindingTypes},
     core::timing::Time,
 };
 
+use serde::{Serialize, Deserialize};
+
 use crate::components::{Player, PlayerState, Motion};
 use crate::systems::motion::SPEED;
+
+#[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
+pub enum AxisBinding {
+    Move,
+}
+
+#[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ActionBinding {
+    AnimChange,
+    Jump,
+    Lift,
+}
+
+impl Display for AxisBinding {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+impl Display for ActionBinding {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+#[derive(Debug)]
+pub struct InputBindingTypes;
+
+impl BindingTypes for InputBindingTypes {
+    type Axis = AxisBinding;
+    type Action = ActionBinding;
+}
 
 static COOLDOWN_TIME: f32 = 0.5;
 
@@ -51,7 +87,7 @@ impl<'s> System<'s> for PlayerInputSystem {
     type SystemData = (
         WriteStorage<'s, Player>,
         WriteStorage<'s, Motion>,
-        Read<'s, InputHandler<StringBindings>>,
+        Read<'s, InputHandler<InputBindingTypes>>,
         Read<'s, Time>,
     );
 
@@ -62,7 +98,7 @@ impl<'s> System<'s> for PlayerInputSystem {
 
             // axises
             {
-                let move_input = input.axis_value("move").expect("Move action exists");
+                let move_input = input.axis_value(&AxisBinding::Move).expect("Move action exists");
                 motion.velocity.x = move_input * SPEED;
             }
 
@@ -72,19 +108,19 @@ impl<'s> System<'s> for PlayerInputSystem {
                     return;
                 }
 
-                if input.action_is_down("anim_change").expect("animation change action exists")
+                if input.action_is_down(&ActionBinding::AnimChange).expect("animation change action exists")
                 {
                     player.state = change_state(player.state);
                     self.set_actions_cooldown();
                 }
 
-                if input.action_is_down("jump").expect("Jump action exists")
+                if input.action_is_down(&ActionBinding::Jump).expect("Jump action exists")
                 {
                     motion.jump_trigger = true;
                     self.set_actions_cooldown();
                 }
 
-                if input.action_is_down("lift").expect("Lift action exists")
+                if input.action_is_down(&ActionBinding::Lift).expect("Lift action exists")
                 {
                     motion.lift_trigger = true;
                     self.set_actions_cooldown();

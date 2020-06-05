@@ -1,15 +1,15 @@
 (
   axes: {
-    "move": Emulated(pos: Key(Right), neg: Key(Left)),
+    Move: Emulated(pos: Key(Right), neg: Key(Left)),
   },
   actions: {
-      "anim_change": [
+      AnimChange: [
           [Key(Space)]
       ],
-      "jump": [
+      Jump: [
           [Key(Up)]
       ],
-      "lift": [
+      Lift: [
           [Key(L)]
       ]
   },

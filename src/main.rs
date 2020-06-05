@@ -12,7 +12,7 @@ use amethyst::{
     assets::{
         PrefabLoaderSystemDesc
     },
-    input::{InputBundle, StringBindings},
+    input::{InputBundle},
 };
 
 mod states;
@@ -30,7 +30,7 @@ fn main() -> amethyst::Result<()> {
     let assets_dir = app_root.join("assets");
     let config_dir = app_root.join("config");
     let display_config_path = config_dir.join("display.ron");
-    let input_bundle = InputBundle::<StringBindings>::new()
+    let input_bundle = InputBundle::<InputBindingTypes>::new()
         .with_bindings_from_file(app_root.join("config/bindings.ron"))?;
 
     let prefab_loader_system_desc = PrefabLoaderSystemDesc::<AnimationPrefab>::default();
