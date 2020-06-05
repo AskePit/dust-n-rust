@@ -30,6 +30,13 @@ impl<'s> System<'s> for MotionSystem {
         for (transform, motion) in (&mut transforms, &mut motions).join() {
             transform.prepend_translation_x(motion.velocity.x * dt);
 
+            if motion.velocity.x > 0.0 {
+                transform.set_rotation_y_axis(0.0);
+            }
+            if motion.velocity.x < 0.0 {
+                transform.set_rotation_y_axis(std::f32::consts::PI);
+            }
+
             if motion.jump_trigger {
                 motion.velocity.y = JUMP_IMPULSE;
                 motion.jump_trigger = false;
