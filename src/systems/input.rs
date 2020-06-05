@@ -93,7 +93,7 @@ impl<'s> System<'s> for PlayerInputSystem {
                     return;
                 }
 
-                if input.action_is_down(&ActionBinding::Jump).expect("Jump action exists")
+                if input.action_is_down(&ActionBinding::Jump).expect("Jump action exists") && motion.grounded
                 {
                     motion.jump_trigger = true;
                     self.set_actions_cooldown();

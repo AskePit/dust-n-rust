@@ -32,6 +32,7 @@ pub struct Motion
 	pub velocity: Point2<f32>,
 	pub jump_trigger: bool,
 	pub lift_trigger: bool,
+	pub grounded: bool,
 }
 
 impl Default for Motion {
@@ -41,6 +42,7 @@ impl Default for Motion {
 			velocity: Point2::new(0.0, 0.0),
 			jump_trigger: false,
 			lift_trigger: false,
+			grounded: false,
 		}
 	}
 }
