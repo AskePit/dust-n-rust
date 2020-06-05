@@ -14,37 +14,9 @@ use crate::{
     components::{Animation, AnimationId, AnimationPrefab, Motion}
 };
 
-#[derive(Eq, Hash, PartialEq, Clone, Copy)]
-pub enum PlayerState {
-    Idling,
-    Walking,
-    JumpStart,
-    Jumping,
-    JumpEnd,
-    Attacking,
-    Hitted,
-    Dead,
-}
-
-impl Default for PlayerState {
-    fn default() -> Self {
-        PlayerState::Idling
-    }
-}
-
 #[derive(Component)]
 #[storage(DenseVecStorage)]
-pub struct Player {
-    pub state: PlayerState,
-}
-
-impl Player {
-    pub fn new() -> Self {
-        Player {
-            state: PlayerState::Idling,
-        }
-    }
-}
+pub struct Player;
 
 pub fn load_player(world: &mut World, prefab: Handle<Prefab<AnimationPrefab>>) {
     let mut transform = Transform::default();
@@ -55,7 +27,7 @@ pub fn load_player(world: &mut World, prefab: Handle<Prefab<AnimationPrefab>>) {
 
     world
         .create_entity()
-        .with(Player::new())
+        .with(Player)
         .named("Player")
         .with(transform)
         .with(Motion::default())

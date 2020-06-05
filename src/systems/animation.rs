@@ -8,7 +8,7 @@ use amethyst::{
 
 use crate::components::{
     Animation, AnimationId,
-    Player, PlayerState,
+    Motion, MotionState,
 };
 
 #[derive(Default)]
@@ -71,24 +71,24 @@ pub struct PlayerAnimationSystem;
 impl<'s> System<'s> for PlayerAnimationSystem {
     type SystemData = (
         Entities<'s>,
-        ReadStorage<'s, Player>,
+        ReadStorage<'s, Motion>,
         WriteStorage<'s, Animation>,
         WriteStorage<'s, AnimationControlSet<AnimationId, SpriteRender>>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, players, mut animations, mut animation_control_sets) = data;
+        let (entities, motions, mut animations, mut animation_control_sets) = data;
 
-        for (entity, player, mut animation, animation_control_set) in (
+        for (entity, motion, mut animation, animation_control_set) in (
             &entities,
-            &players,
+            &motions,
             &mut animations,
             &mut animation_control_sets,
         ).join()
         {
-            use PlayerState::*;
+            use MotionState::*;
 
-            let new_animation_id = match player.state {
+            let new_animation_id = match motion.state {
                 Walking => AnimationId::Walk,
                 Jumping | JumpStart | JumpEnd => AnimationId::Jump,
                 Attacking => AnimationId::Attack,

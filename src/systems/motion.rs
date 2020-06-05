@@ -4,6 +4,7 @@ use amethyst::{
 	core::timing::Time,
 };
 
+use crate::components::MotionState;
 use crate::components::Motion;
 
 #[derive(Default)]
@@ -30,11 +31,16 @@ impl<'s> System<'s> for MotionSystem {
         for (transform, motion) in (&mut transforms, &mut motions).join() {
             transform.prepend_translation_x(motion.velocity.x * dt);
 
-            if motion.velocity.x > 0.0 {
-                transform.set_rotation_y_axis(0.0);
-            }
-            if motion.velocity.x < 0.0 {
-                transform.set_rotation_y_axis(std::f32::consts::PI);
+            if motion.velocity.x.abs() < f32::EPSILON {
+                motion.state = MotionState::Idling;
+            } else {
+                motion.state = MotionState::Walking;
+                if motion.velocity.x > 0.0 {
+                    transform.set_rotation_y_axis(0.0);
+                }
+                if motion.velocity.x < 0.0 {
+                    transform.set_rotation_y_axis(std::f32::consts::PI);
+                }
             }
 
             if motion.jump_trigger {
@@ -49,6 +55,10 @@ impl<'s> System<'s> for MotionSystem {
 
             motion.velocity.y -= GRAVITY * dt;
             let y = transform.translation().y;
+
+            if y > 0.0 {
+                motion.state = MotionState::Jumping;
+            }
 
             if motion.velocity.y < 0.0 && y <= GROUND_LEVEL {
                 motion.velocity.y = 0.0;

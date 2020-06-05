@@ -7,5 +7,5 @@ pub use self::animation::Animation;
 pub use self::animation::AnimationId;
 pub use self::animation::AnimationPrefab;
 pub use self::player::Player;
-pub use self::player::PlayerState;
+pub use self::motion::MotionState;
 pub use self::motion::Motion;

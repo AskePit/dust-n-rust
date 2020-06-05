@@ -1,14 +1,14 @@
 use std::fmt::{self, Display};
 
 use amethyst::{
-    ecs::{Join, Read, System, WriteStorage},
+    ecs::{Join, Read, System, WriteStorage, ReadStorage},
     input::{InputHandler, BindingTypes},
     core::timing::Time,
 };
 
 use serde::{Serialize, Deserialize};
 
-use crate::components::{Player, PlayerState, Motion};
+use crate::components::{Motion, Player};
 use crate::systems::motion::SPEED;
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
@@ -51,21 +51,6 @@ pub struct PlayerInputSystem
     actions_cooldown: Option<f32>,
 }
 
-fn change_state(state: PlayerState) -> PlayerState
-{
-    use PlayerState::*;
-
-    match state {
-        Idling => Walking,
-        Walking => Jumping,
-        Jumping => Attacking,
-        Attacking => Hitted,
-        Hitted => Dead,
-        Dead => Idling,
-        _ => Idling,
-    }
-}
-
 impl PlayerInputSystem {
     fn advance_actions_cooldown(&mut self, delta_seconds: f32) -> bool {
         if let Some(ref mut actions_cooldown) = self.actions_cooldown {
@@ -85,16 +70,16 @@ impl PlayerInputSystem {
 
 impl<'s> System<'s> for PlayerInputSystem {
     type SystemData = (
-        WriteStorage<'s, Player>,
+        ReadStorage<'s, Player>,
         WriteStorage<'s, Motion>,
         Read<'s, InputHandler<InputBindingTypes>>,
         Read<'s, Time>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut players, mut motions, input, time) = data;
+        let (_players, mut motions, input, time) = data;
 
-        for (player, motion) in (&mut players, &mut motions).join() {
+        for motion in (&mut motions).join() {
 
             // axises
             {
@@ -106,12 +91,6 @@ impl<'s> System<'s> for PlayerInputSystem {
             {
                 if !self.advance_actions_cooldown(time.delta_seconds()) {
                     return;
-                }
-
-                if input.action_is_down(&ActionBinding::AnimChange).expect("animation change action exists")
-                {
-                    player.state = change_state(player.state);
-                    self.set_actions_cooldown();
                 }
 
                 if input.action_is_down(&ActionBinding::Jump).expect("Jump action exists")
