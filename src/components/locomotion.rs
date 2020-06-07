@@ -7,7 +7,7 @@ use amethyst::{
 
 #[allow(dead_code)]
 #[derive(Eq, Hash, PartialEq, Clone, Copy)]
-pub enum MotionState {
+pub enum LocomotionState {
     Idling,
     Walking,
     JumpStart,
@@ -18,27 +18,27 @@ pub enum MotionState {
     Dead,
 }
 
-impl Default for MotionState {
+impl Default for LocomotionState {
     fn default() -> Self {
-        MotionState::Idling
+        LocomotionState::Idling
     }
 }
 
 #[derive(Component)]
 #[storage(DenseVecStorage)]
-pub struct Motion
+pub struct Locomotion
 {
-	pub state: MotionState,
+	pub state: LocomotionState,
 	pub velocity: Point2<f32>,
 	pub jump_trigger: bool,
 	pub lift_trigger: bool,
 	pub grounded: bool,
 }
 
-impl Default for Motion {
+impl Default for Locomotion {
 	fn default() -> Self {
-		Motion {
-			state: MotionState::Idling,
+		Locomotion {
+			state: LocomotionState::Idling,
 			velocity: Point2::new(0.0, 0.0),
 			jump_trigger: false,
 			lift_trigger: false,

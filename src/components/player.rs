@@ -11,7 +11,7 @@ use amethyst::{
 };
 
 use crate::{
-    components::{Animation, AnimationId, AnimationPrefab, Motion}
+    components::{Animation, AnimationId, AnimationPrefab, Locomotion}
 };
 
 #[derive(Component)]
@@ -28,7 +28,7 @@ pub fn load_player(world: &mut World, prefab: Handle<Prefab<AnimationPrefab>>) {
         .with(Player)
         .named("Player")
         .with(transform)
-        .with(Motion::default())
+        .with(Locomotion::default())
         .with(Animation::new(
             AnimationId::Idle,
             vec![

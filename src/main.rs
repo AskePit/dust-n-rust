@@ -62,8 +62,8 @@ fn main() -> amethyst::Result<()> {
             &["animation_control_system"],
         )
         .with(
-            MotionSystem,
-            "motion_system",
+            LocomotionSystem,
+            "locomotion_system",
             &["player_input_system"],
         )
         .with_bundle(

@@ -8,8 +8,8 @@ use amethyst::{
 
 use serde::{Serialize, Deserialize};
 
-use crate::components::{Motion, Player};
-use crate::systems::motion::SPEED;
+use crate::components::{Locomotion, Player};
+use crate::systems::locomotion::SPEED;
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AxisBinding {
@@ -71,7 +71,7 @@ impl PlayerInputSystem {
 impl<'s> System<'s> for PlayerInputSystem {
     type SystemData = (
         ReadStorage<'s, Player>,
-        WriteStorage<'s, Motion>,
+        WriteStorage<'s, Locomotion>,
         Read<'s, InputHandler<InputBindingTypes>>,
         Read<'s, Time>,
     );
@@ -79,12 +79,12 @@ impl<'s> System<'s> for PlayerInputSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (_players, mut motions, input, time) = data;
 
-        for motion in (&mut motions).join() {
+        for locomotion in (&mut motions).join() {
 
             // axises
             {
                 let move_input = input.axis_value(&AxisBinding::Move).expect("Move action exists");
-                motion.velocity.x = move_input * SPEED;
+                locomotion.velocity.x = move_input * SPEED;
             }
 
             // actions
@@ -93,15 +93,15 @@ impl<'s> System<'s> for PlayerInputSystem {
                     return;
                 }
 
-                if input.action_is_down(&ActionBinding::Jump).expect("Jump action exists") && motion.grounded
+                if input.action_is_down(&ActionBinding::Jump).expect("Jump action exists") && locomotion.grounded
                 {
-                    motion.jump_trigger = true;
+                    locomotion.jump_trigger = true;
                     self.set_actions_cooldown();
                 }
 
                 if input.action_is_down(&ActionBinding::Lift).expect("Lift action exists")
                 {
-                    motion.lift_trigger = true;
+                    locomotion.lift_trigger = true;
                     self.set_actions_cooldown();
                 }
             }
