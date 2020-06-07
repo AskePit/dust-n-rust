@@ -1,10 +1,28 @@
 use amethyst::{
-    core::{Transform},
-    ecs::{prelude::World},
+    core::{
+        Transform,
+        math::{Point2},
+    },
+    ecs::{prelude::World,Component, DenseVecStorage},
     prelude::{Builder, WorldExt},
     renderer::camera::Camera,
     window::ScreenDimensions,
 };
+
+#[derive(Component)]
+#[storage(DenseVecStorage)]
+pub struct CameraMotion
+{
+	pub velocity: Point2<f32>,
+}
+
+impl Default for CameraMotion {
+	fn default() -> Self {
+		CameraMotion {
+			velocity: Point2::new(0.0, 0.0),
+		}
+	}
+}
 
 pub fn load_camera(world: &mut World) {
     let (width, height) = {
@@ -18,5 +36,6 @@ pub fn load_camera(world: &mut World) {
         .create_entity()
         .with(Camera::standard_2d(width, height))
         .with(transform)
+        .with(CameraMotion::default())
         .build();
 }

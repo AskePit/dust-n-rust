@@ -108,3 +108,49 @@ impl<'s> System<'s> for PlayerInputSystem {
         }
     }
 }
+
+/*
+#[derive(Default)]
+pub struct CameraInputSystem;
+
+impl<'s> System<'s> for CameraInputSystem {
+    type SystemData = (
+        ReadStorage<'s, Player>,
+        WriteStorage<'s, Locomotion>,
+        Read<'s, InputHandler<InputBindingTypes>>,
+        Read<'s, Time>,
+    );
+
+    fn run(&mut self, data: Self::SystemData) {
+        let (_players, mut motions, input, time) = data;
+
+        for locomotion in (&mut motions).join() {
+
+            // axises
+            {
+                let move_input = input.axis_value(&AxisBinding::Move).expect("Move action exists");
+                locomotion.velocity.x = move_input * SPEED;
+            }
+
+            // actions
+            {
+                if !self.advance_actions_cooldown(time.delta_seconds()) {
+                    return;
+                }
+
+                if input.action_is_down(&ActionBinding::Jump).expect("Jump action exists") && locomotion.grounded
+                {
+                    locomotion.jump_trigger = true;
+                    self.set_actions_cooldown();
+                }
+
+                if input.action_is_down(&ActionBinding::Lift).expect("Lift action exists")
+                {
+                    locomotion.lift_trigger = true;
+                    self.set_actions_cooldown();
+                }
+            }
+        }
+    }
+}
+*/

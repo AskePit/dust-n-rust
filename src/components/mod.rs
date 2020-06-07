@@ -9,3 +9,4 @@ pub use self::animation::AnimationPrefab;
 pub use self::player::Player;
 pub use self::locomotion::LocomotionState;
 pub use self::locomotion::Locomotion;
+pub use self::camera::CameraMotion;

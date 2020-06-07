@@ -66,6 +66,11 @@ fn main() -> amethyst::Result<()> {
             "locomotion_system",
             &["player_input_system"],
         )
+        .with(
+            CameraMotionSystem,
+            "camera_motion_system",
+            &["locomotion_system"],
+        )
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
