@@ -12,7 +12,7 @@ pub fn load_camera(world: &mut World) {
         (dim.width(), dim.height())
     };
     let mut transform = Transform::default();
-    transform.set_translation_xyz(0.0, 0.0, 1.0);
+    transform.set_translation_xyz(width/2.0, height*0.25, 20.0);
 
     world
         .create_entity()

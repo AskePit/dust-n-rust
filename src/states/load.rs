@@ -56,6 +56,33 @@ pub fn get_sprite_sheet_handle(
     )
 }
 
+fn load_level(world: &mut World, background_handle: Handle<SpriteSheet>) {
+    //let sprite_sheet: &SpriteSheet;
+    let background_width = 1200;
+    let background_height = 450;
+    /*{
+        let sprite_sheet_store = &world.read_resource::<AssetStorage<SpriteSheet>>();
+        sprite_sheet = sprite_sheet_store.get(&background_handle).unwrap();
+        background_width = sprite_sheet.sprites[0].width;
+        background_height = sprite_sheet.sprites[0].height;
+    }*/
+
+    let mut background_transform = Transform::default();
+    // position left-bottom corner to world's (0; 0) position
+    background_transform.set_translation_xyz(background_width as f32/2.0, background_height as f32/2.0, -10.0);
+
+    let sprite_render = SpriteRender {
+        sprite_sheet: background_handle,
+        sprite_number: 0,
+    };
+
+    world
+    .create_entity()
+    .with(background_transform)
+    .with(sprite_render)
+    .build();
+}
+
 impl SimpleState for LoadState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
@@ -63,26 +90,13 @@ impl SimpleState for LoadState {
         let mut progress_counter = ProgressCounter::new();
         let ron_path = "sprites/old_man/old_man.ron";
 
+        let background_handle = 
+        get_sprite_sheet_handle(world, "backgrounds/brick_wall.png", "backgrounds/brick_wall.ron", &mut progress_counter);
+
         let player_prefab_handle =
         get_animation_prefab_handle(world, ron_path, &mut progress_counter);
 
-        let background_handle = 
-            get_sprite_sheet_handle(world, "backgrounds/brick_wall.png", "backgrounds/brick_wall.ron", &mut progress_counter);
-
-        let sprite_render = SpriteRender {
-            sprite_sheet: background_handle,
-            sprite_number: 0, // paddle is the first sprite in the sprite_sheet
-        };
-
-        let mut background_transform = Transform::default();
-        background_transform.set_translation_xyz(0.0, 0.0, -10.0);
-
-        world
-        .create_entity()
-        .with(background_transform)
-        .with(sprite_render)
-        .build();
-
+        load_level(world, background_handle);
         load_camera(world);
         load_player(world, player_prefab_handle);
     }
