@@ -3,40 +3,26 @@ use std::{
 };
 
 use amethyst::{
-    core::{
-        transform::Transform,
-        math::Vector3,
-    },
-    assets::{AssetStorage, Handle, ProgressCounter, Prefab, Loader, PrefabLoader, RonFormat},
+    assets::{AssetStorage, Handle, ProgressCounter, Prefab, Loader,},
     prelude::{GameData, SimpleState, StateData},
     ecs::prelude::{World},
     prelude::WorldExt,
     prelude::*,
     renderer::{
         formats::texture::ImageFormat,
-        sprite::{SpriteSheetFormat, SpriteSheetHandle, SpriteRender},
+        sprite::{SpriteSheetFormat, SpriteSheetHandle},
         SpriteSheet, Texture,
     },
 };
 
-use crate::components::{
-    AnimationPrefab,
-    camera::load_camera,
-    player::load_player,
+use crate::{
+    components::{
+        AnimationPrefab,
+        player::load_player,
+    },
+    states::GameState,
+    resources::BackgroundsMeta,
 };
-
-#[derive(Default)]
-pub struct LoadState;
-
-fn get_animation_prefab_handle(
-    world: &mut World,
-    ron_path: &str,
-    progress_counter: &mut ProgressCounter,
-) -> Handle<Prefab<AnimationPrefab>> {
-    world.exec(|loader: PrefabLoader<'_, AnimationPrefab>| {
-        loader.load(ron_path, RonFormat, progress_counter)
-    })
-}
 
 pub fn get_sprite_sheet_handle(
     world: &World,
@@ -63,46 +49,53 @@ pub fn get_sprite_sheet_handle(
     )
 }
 
-fn load_level(world: &mut World, mut progress_counter: &mut ProgressCounter) {
+fn load_level(world: &mut World, handlers: &mut Vec<Handle<SpriteSheet>>, mut progress_counter: &mut ProgressCounter) {
 
     let level_root = PathBuf::from("backgrounds/test_level");
 
-    let width = 1200*2;
-    let height = 225*2;
-    let ground = 33.0*2.0;
+    {
+        let backgrounds_meta = BackgroundsMeta::new();
+        world.insert(backgrounds_meta);
+    }
 
-    let backgrounds_map = [
-        ("z-10_1.png", -10.0f32),
-        ("z-10_2.png", -10.0f32),
-        ("z-15.png", -15.0f32),
-        ("z-20_1.png", -20.0f32),
-        ("z-20_2.png", -20.0f32),
-        ("z-20_3.png", -20.0f32),
-        ("z-30.png", -30.0f32),
-        ("z+0.png", -1.0f32),
-        ("z+1.png", 1.0f32),
-    ];
+    let backgrounds_meta = world.read_resource::<BackgroundsMeta>();
 
-    for el in &backgrounds_map {
-        let (bg_path, z) = el;
+    for el in &backgrounds_meta.data {
+        let (bg_path, _) = el;
         let bg_handle = 
         get_sprite_sheet_handle(world, level_root.join(bg_path).to_str().unwrap(), "backgrounds/test_bg.ron", &mut progress_counter);
 
-        let mut transform = Transform::default();
-        // position left-bottom corner to world's (0; 0) position
-        transform.set_translation_xyz(width as f32/2.0, height as f32/2.0 - ground, *z);
-        transform.set_scale(Vector3::new(2.0, 2.0, 2.0));
+        handlers.push(bg_handle);
+    }
+}
 
-        let sprite_render = SpriteRender {
-            sprite_sheet: bg_handle,
-            sprite_number: 0,
-        };
+pub struct AssetHandlers
+{
+    pub prefabs: Vec<Handle<Prefab<AnimationPrefab>>>,
+    pub sprite_sheets: Vec<Handle<SpriteSheet>>,
+}
 
-        world
-            .create_entity()
-            .with(transform)
-            .with(sprite_render)
-            .build();
+impl Default for AssetHandlers {
+    fn default() -> Self {
+        AssetHandlers {
+            prefabs: Vec::new(),
+            sprite_sheets: Vec::new(),
+        }
+    }
+}
+
+#[derive(Default)]
+pub struct LoadState {
+    progress_counter: ProgressCounter,
+    handlers: Option<AssetHandlers>,
+}
+
+impl LoadState {
+    pub fn new() -> Self {
+        Self {
+            progress_counter: ProgressCounter::new(),
+            handlers: Some(AssetHandlers::default())
+        }
     }
 }
 
@@ -110,14 +103,15 @@ impl SimpleState for LoadState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
-        let mut progress_counter = ProgressCounter::new();
-        let ron_path = "sprites/old_man/old_man.ron";
+        load_level(world, &mut self.handlers.as_mut().unwrap().sprite_sheets, &mut self.progress_counter);
+        load_player(world, &mut self.handlers.as_mut().unwrap().prefabs, &mut self.progress_counter);
+    }
 
-        let player_prefab_handle =
-        get_animation_prefab_handle(world, ron_path, &mut progress_counter);
-
-        load_level(world, &mut progress_counter);
-        load_camera(world);
-        load_player(world, player_prefab_handle);
+    fn update(&mut self, _data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
+        if self.progress_counter.is_complete() {
+            Trans::Switch(Box::new(GameState::new(self.handlers.take().unwrap())))
+        } else {
+            Trans::None
+        }
     }
 }

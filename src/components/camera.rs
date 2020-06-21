@@ -24,7 +24,7 @@ impl Default for CameraMotion {
 	}
 }
 
-pub fn load_camera(world: &mut World) {
+pub fn add_camera(world: &mut World) {
     let (width, height) = {
         let dim = world.fetch::<ScreenDimensions>();
         (dim.width(), dim.height())

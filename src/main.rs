@@ -18,6 +18,7 @@ use amethyst::{
 mod states;
 mod components;
 mod systems;
+mod resources;
 
 use components::{AnimationId, AnimationPrefab};
 use systems::*;
@@ -80,7 +81,7 @@ fn main() -> amethyst::Result<()> {
                 .with_plugin(RenderFlat2D::default()),
         )?;
 
-    let mut game = Application::new(assets_dir, states::LoadState, game_data)?;
+    let mut game = Application::new(assets_dir, states::LoadState::new(), game_data)?;
     game.run();
 
     Ok(())
