@@ -1,6 +1,12 @@
+use std::{
+    path::PathBuf,
+};
+
 use amethyst::{
-    core::transform::Transform,
-    core::math::Vector3,
+    core::{
+        transform::Transform,
+        math::Vector3,
+    },
     assets::{AssetStorage, Handle, ProgressCounter, Prefab, Loader, PrefabLoader, RonFormat},
     prelude::{GameData, SimpleState, StateData},
     ecs::prelude::{World},
@@ -57,49 +63,46 @@ pub fn get_sprite_sheet_handle(
     )
 }
 
-fn load_level(world: &mut World, background_handle: Handle<SpriteSheet>, foreground_handle: Handle<SpriteSheet>) {
-    //let sprite_sheet: &SpriteSheet;
-    let background_width = 1200*2;
-    let background_height = 225*2;
-    let background_ground = 33.0*2.0;
-    /*{
-        let sprite_sheet_store = &world.read_resource::<AssetStorage<SpriteSheet>>();
-        sprite_sheet = sprite_sheet_store.get(&background_handle).unwrap();
-        background_width = sprite_sheet.sprites[0].width;
-        background_height = sprite_sheet.sprites[0].height;
-    }*/
+fn load_level(world: &mut World, mut progress_counter: &mut ProgressCounter) {
 
-    let mut background_transform = Transform::default();
-    // position left-bottom corner to world's (0; 0) position
-    background_transform.set_translation_xyz(background_width as f32/2.0, background_height as f32/2.0 - background_ground, -10.0);
-    background_transform.set_scale(Vector3::new(2.0, 2.0, 2.0));
+    let level_root = PathBuf::from("backgrounds/test_level");
 
-    let mut foreground_transform = Transform::default();
-    // position left-bottom corner to world's (0; 0) position
-    foreground_transform.set_translation_xyz(background_width as f32/2.0, background_height as f32/2.0 - background_ground, 10.0);
-    foreground_transform.set_scale(Vector3::new(2.0, 2.0, 2.0));
+    let width = 1200*2;
+    let height = 225*2;
+    let ground = 33.0*2.0;
 
-    let bg_sprite_render = SpriteRender {
-        sprite_sheet: background_handle,
-        sprite_number: 0,
-    };
+    let backgrounds_map = [
+        ("z-10_1.png", -10.0f32),
+        ("z-10_2.png", -10.0f32),
+        ("z-20_1.png", -20.0f32),
+        ("z-20_2.png", -20.0f32),
+        ("z-20_3.png", -20.0f32),
+        ("z-30.png", -30.0f32),
+        ("z+0.png", -1.0f32),
+        ("z+1.png", 1.0f32),
+    ];
 
-    let fg_sprite_render = SpriteRender {
-        sprite_sheet: foreground_handle,
-        sprite_number: 0,
-    };
+    for el in &backgrounds_map {
+        let (bg_path, z) = el;
+        let bg_handle = 
+        get_sprite_sheet_handle(world, level_root.join(bg_path).to_str().unwrap(), "backgrounds/test_bg.ron", &mut progress_counter);
 
-    world
-    .create_entity()
-    .with(background_transform)
-    .with(bg_sprite_render)
-    .build();
+        let mut transform = Transform::default();
+        // position left-bottom corner to world's (0; 0) position
+        transform.set_translation_xyz(width as f32/2.0, height as f32/2.0 - ground, *z);
+        transform.set_scale(Vector3::new(2.0, 2.0, 2.0));
 
-    world
-    .create_entity()
-    .with(foreground_transform)
-    .with(fg_sprite_render)
-    .build();
+        let sprite_render = SpriteRender {
+            sprite_sheet: bg_handle,
+            sprite_number: 0,
+        };
+
+        world
+            .create_entity()
+            .with(transform)
+            .with(sprite_render)
+            .build();
+    }
 }
 
 impl SimpleState for LoadState {
@@ -109,16 +112,10 @@ impl SimpleState for LoadState {
         let mut progress_counter = ProgressCounter::new();
         let ron_path = "sprites/old_man/old_man.ron";
 
-        let background_handle = 
-        get_sprite_sheet_handle(world, "backgrounds/test_bg.png", "backgrounds/test_bg.ron", &mut progress_counter);
-
-        let foreground_handle = 
-        get_sprite_sheet_handle(world, "backgrounds/test_bg_foreground.png", "backgrounds/test_bg_foreground.ron", &mut progress_counter);
-
         let player_prefab_handle =
         get_animation_prefab_handle(world, ron_path, &mut progress_counter);
 
-        load_level(world, background_handle, foreground_handle);
+        load_level(world, &mut progress_counter);
         load_camera(world);
         load_player(world, player_prefab_handle);
     }

@@ -59,8 +59,8 @@ impl<'s> System<'s> for CameraMotionSystem {
 			target_transform.set_translation_x(camera_half_width);
 		}
 
-		if target_transform.translation().x + camera_half_width > 1200.0 {
-			target_transform.set_translation_x(1200.0 - camera_half_width);
+		if target_transform.translation().x + camera_half_width > 1200.0*2.0 {
+			target_transform.set_translation_x(1200.0*2.0 - camera_half_width);
 		}
 
 		camera_transform.set_translation(*target_transform.translation());
