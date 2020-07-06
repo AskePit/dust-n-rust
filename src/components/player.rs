@@ -28,13 +28,9 @@ fn get_animation_prefab_handle(
 #[storage(DenseVecStorage)]
 pub struct Player;
 
-pub fn load_player(world: &mut World, handlers: &mut Vec<Handle<Prefab<AnimationPrefab>>>, mut progress_counter: &mut ProgressCounter) {
+pub fn load_player(world: &mut World, mut progress_counter: &mut ProgressCounter) -> Handle<Prefab<AnimationPrefab>> {
     let ron_path = "sprites/old_man/old_man.ron";
-
-    let player_prefab_handle =
-    get_animation_prefab_handle(world, ron_path, &mut progress_counter);
-
-    handlers.push(player_prefab_handle);
+    get_animation_prefab_handle(world, ron_path, &mut progress_counter)
 }
 
 pub fn add_player(world: &mut World, handle: Handle<Prefab<AnimationPrefab>>) {
