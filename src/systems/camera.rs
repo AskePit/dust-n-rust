@@ -6,7 +6,11 @@ use amethyst::{
 };
 
 use crate::{
-	components::{Player, CameraMotion}
+	components::{
+		Player,
+		CameraMotion,
+		LevelLayerComponent,
+	},
 };
 
 #[derive(Default)]
@@ -35,10 +39,10 @@ impl<'s> System<'s> for CameraMotionSystem {
 			}
 		}
 
-		if target_transform.is_none() {
-			return;
-		}
-		let mut target_transform = target_transform.unwrap();
+		let mut target_transform = match target_transform {
+			Some(t) => t,
+			None => return,
+		};
 
 		let mut camera_transform: Option<&mut Transform> = None;
 		let mut camera_half_width: f32 = 0.0;
@@ -50,10 +54,10 @@ impl<'s> System<'s> for CameraMotionSystem {
 			}
 		}
 
-		if camera_transform.is_none() {
-			return;
-		}
-		let camera_transform = camera_transform.unwrap();
+		let camera_transform = match camera_transform {
+			Some(t) => t,
+			None => return,
+		};
 
 		if target_transform.translation().x - camera_half_width < 0.0 {
 			target_transform.set_translation_x(camera_half_width);
@@ -64,5 +68,54 @@ impl<'s> System<'s> for CameraMotionSystem {
 		}
 
 		camera_transform.set_translation(*target_transform.translation());
+    }
+}
+
+#[derive(Default)]
+pub struct ParallaxSystem;
+
+const PARALLAX_COEFF: f32 = 0.02;
+
+impl<'s> System<'s> for ParallaxSystem {
+    type SystemData = (
+		WriteStorage<'s, Transform>,
+		ReadStorage<'s, Camera>,
+		WriteStorage<'s, LevelLayerComponent>,
+    );
+
+    fn run(&mut self, data: Self::SystemData) {
+		let (mut transforms, cameras, mut level_layers) = data;
+
+		let mut camera_transform: Option<&Transform> = None;
+		let mut camera_half_width: f32 = 0.0;
+		{
+			for (transform, camera) in (&transforms, &cameras).join() {
+				camera_transform = Some(transform);
+				camera_half_width = camera.projection().as_orthographic().unwrap().right();
+				break;
+			}
+		}
+
+		let camera_transform = match camera_transform {
+			Some(t) => t,
+			None => return,
+		};
+
+		let camera_x = camera_transform.translation().x;
+
+		for (transform, level_layer) in (&mut transforms, &mut level_layers).join() {
+
+			if level_layer.depth >= -0.99 {
+				continue;
+			}
+
+			let shift = -level_layer.depth * (camera_x - camera_half_width) * PARALLAX_COEFF;
+
+			let old_shift = level_layer.parallax_shift;
+			level_layer.parallax_shift = shift;
+
+			transform.prepend_translation_x(-old_shift);
+			transform.prepend_translation_x(shift);
+		}
     }
 }

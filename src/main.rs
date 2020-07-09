@@ -73,6 +73,11 @@ fn main() -> amethyst::Result<()> {
             "camera_motion_system",
             &["locomotion_system"],
         )
+        .with(
+            ParallaxSystem,
+            "parallax_system",
+            &["camera_motion_system"],
+        )
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(

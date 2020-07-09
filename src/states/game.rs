@@ -18,6 +18,7 @@ use crate::{
         AnimationPrefab,
         camera::add_camera,
         player::add_player,
+        level::LevelLayerComponent,
     },
     resources::*,
 };
@@ -41,8 +42,14 @@ fn add_level(world: &mut World, level: LevelData) {
             sprite_number: 0,
         };
 
+        let level_layer_component = LevelLayerComponent {
+            depth: layer.depth,
+            parallax_shift: 0.0,
+        };
+
         world
             .create_entity()
+            .with(level_layer_component)
             .with(transform)
             .with(sprite_render)
             .build();
