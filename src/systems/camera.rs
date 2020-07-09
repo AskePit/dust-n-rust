@@ -6,7 +6,7 @@ use amethyst::{
 };
 
 use crate::{
-    components::{Player, CameraMotion}
+	components::{Player, CameraMotion}
 };
 
 #[derive(Default)]

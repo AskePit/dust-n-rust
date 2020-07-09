@@ -32,7 +32,7 @@ fn add_level(world: &mut World, level: LevelData) {
         let z = layer.depth;
 
         let mut transform = Transform::default();
-        // position left-bottom corner to world's (0; 0) position
+        // position left-bottom corner to world's (0; 0-ground) position
         transform.set_translation_xyz(width as f32/2.0, height as f32/2.0 - ground, z);
         transform.set_scale(Vector3::new(2.0, 2.0, 2.0));
 
@@ -55,6 +55,11 @@ pub struct GameState;
 impl SimpleState for GameState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
+
+        {
+            let levels = &mut world.write_resource::<LevelDataList>();
+            levels.load_level_sizes(world);
+        }
 
         let level: LevelData;
         {

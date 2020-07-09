@@ -30,11 +30,13 @@ impl SimpleState for LoadState {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
+        // load levels
         {
             let levels = load_levels_list(world, &mut self.progress_counter).unwrap();
             world.insert(levels);
         }
 
+        // load player
         {
             let mut prefabs = PrefabsDataList::default();
             prefabs.prefabs_list.push(

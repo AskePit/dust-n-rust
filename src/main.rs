@@ -19,6 +19,7 @@ mod states;
 mod components;
 mod systems;
 mod resources;
+mod utils;
 
 use components::{AnimationId, AnimationPrefab};
 use systems::*;

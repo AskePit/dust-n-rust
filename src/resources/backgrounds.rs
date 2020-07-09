@@ -7,15 +7,18 @@ use std::{
 use regex::Regex;
 
 use amethyst::{
-	assets::{AssetStorage, ProgressCounter, Loader,},
+	assets::{AssetStorage, ProgressCounter, Loader},
 	ecs::prelude::{World},
 	prelude::WorldExt,
 	renderer::{
         formats::texture::ImageFormat,
         sprite::{SpriteSheetFormat, SpriteSheetHandle},
-        SpriteSheet, Texture,
+		SpriteSheet, Texture,
     },
 };
+
+use crate::utils;
+
 #[derive(Clone)]
 pub struct LevelLayer
 {
@@ -28,12 +31,30 @@ pub struct LevelData
 {
 	pub name: String,
 	pub layers_list: Vec<LevelLayer>,
+	pub width: usize,
+	pub height: usize,
 }
 
 #[derive(Default)]
 pub struct LevelDataList
 {
 	pub levels_list: Vec<LevelData>
+}
+
+impl LevelDataList {
+	pub fn load_level_sizes(&mut self, world: &World) {
+		for level in &mut self.levels_list {
+			if level.layers_list.is_empty() {
+				continue;
+			}
+
+			let layer = level.layers_list.first().unwrap();
+
+			let dimensions = utils::get_sprite_dimensions(world, &layer.sprite_handle.as_ref().unwrap()).unwrap();
+			level.width = dimensions.0;
+			level.height = dimensions.1;
+		}
+	}
 }
 
 static LEVELS_ROOT: &str = "assets/backgrounds";
