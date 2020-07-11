@@ -74,7 +74,7 @@ impl<'s> System<'s> for CameraMotionSystem {
 #[derive(Default)]
 pub struct ParallaxSystem;
 
-const PARALLAX_COEFF: f32 = 0.02;
+const PARALLAX_COEFF: f32 = 0.03;
 
 impl<'s> System<'s> for ParallaxSystem {
     type SystemData = (
@@ -110,12 +110,12 @@ impl<'s> System<'s> for ParallaxSystem {
 			}
 
 			let shift = -level_layer.depth * (camera_x - camera_half_width) * PARALLAX_COEFF;
+			let shift = shift.min(camera_x - camera_half_width);
 
 			let old_shift = level_layer.parallax_shift;
-			level_layer.parallax_shift = shift;
 
-			transform.prepend_translation_x(-old_shift);
-			transform.prepend_translation_x(shift);
+			level_layer.parallax_shift = shift;
+			transform.prepend_translation_x(shift-old_shift);
 		}
     }
 }
