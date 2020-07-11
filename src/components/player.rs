@@ -49,7 +49,9 @@ pub fn add_player(world: &mut World, handle: Handle<Prefab<AnimationPrefab>>) {
             vec![
                 AnimationId::Idle,
                 AnimationId::Walk,
-                AnimationId::Jump,
+                AnimationId::JumpStart,
+                AnimationId::Jumping,
+                AnimationId::JumpEnd,
                 AnimationId::Attack,
                 AnimationId::Hitted,
                 AnimationId::Death,

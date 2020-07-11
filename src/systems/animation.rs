@@ -90,7 +90,9 @@ impl<'s> System<'s> for PlayerAnimationSystem {
 
             let new_animation_id = match locomotion.state {
                 Walking => AnimationId::Walk,
-                Jumping | JumpStart | JumpEnd => AnimationId::Jump,
+                JumpStart => AnimationId::JumpStart,
+                Jumping => AnimationId::Jumping,
+                JumpEnd => AnimationId::JumpEnd,
                 Attacking => AnimationId::Attack,
                 Hitted => AnimationId::Hitted,
                 Dead => AnimationId::Death,

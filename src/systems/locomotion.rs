@@ -32,9 +32,15 @@ impl<'s> System<'s> for LocomotionSystem {
             transform.prepend_translation_x(locomotion.velocity.x * dt);
 
             if locomotion.velocity.x.abs() < f32::EPSILON {
-                locomotion.state = LocomotionState::Idling;
+                locomotion.state = match locomotion.state {
+                    LocomotionState::JumpStart | LocomotionState::Jumping => locomotion.state,
+                    _ => LocomotionState::Idling,
+                };
             } else {
-                locomotion.state = LocomotionState::Walking;
+                locomotion.state = match locomotion.state {
+                    LocomotionState::JumpStart | LocomotionState::Jumping => locomotion.state,
+                    _ => LocomotionState::Walking,
+                };
                 if locomotion.velocity.x > 0.0 {
                     transform.set_rotation_y_axis(0.0);
                 }
@@ -59,7 +65,12 @@ impl<'s> System<'s> for LocomotionSystem {
             let y = transform.translation().y;
 
             if y > 0.0 {
-                locomotion.state = LocomotionState::Jumping;
+                locomotion.state = match locomotion.state {
+                    LocomotionState::JumpStart | LocomotionState::Jumping => LocomotionState::Jumping,
+                    _ => LocomotionState::JumpStart,
+                };
+            } else if locomotion.state == LocomotionState::JumpStart || locomotion.state == LocomotionState::Jumping {
+                locomotion.state = LocomotionState::JumpEnd;
             }
 
             if locomotion.velocity.y < 0.0 && y <= GROUND_LEVEL {

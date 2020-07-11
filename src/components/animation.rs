@@ -14,7 +14,9 @@ use serde::{Deserialize, Serialize};
 pub enum AnimationId {
     Idle,
     Walk,
-    Jump,
+    JumpStart,
+    Jumping,
+    JumpEnd,
     Attack,
     Hitted,
     Death,
