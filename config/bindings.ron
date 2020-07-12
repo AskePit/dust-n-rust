@@ -13,6 +13,9 @@
       ],
       Lift: [
           [Key(L)]
+      ],
+      Sprint: [
+          [Key(LShift)]
       ]
   },
 )

@@ -24,6 +24,7 @@ pub enum ActionBinding {
     AnimChange,
     Jump,
     Lift,
+    Sprint
 }
 
 impl Display for AxisBinding {
@@ -87,7 +88,10 @@ impl<'s> System<'s> for PlayerInputSystem {
             // axises
             {
                 let move_input = input.axis_value(&AxisBinding::Move).expect("Move action exists");
-                locomotion.velocity.x = move_input * locomotion::SPEED;
+                let sprint = input.action_is_down(&ActionBinding::Sprint).expect("Sprint action exists");
+                let speed = if sprint {locomotion::SPRINT_SPEED} else {locomotion::SPEED};
+
+                locomotion.velocity.x = move_input * speed;
             }
 
             // actions
