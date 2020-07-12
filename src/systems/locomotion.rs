@@ -12,7 +12,7 @@ pub struct LocomotionSystem;
 
 pub const SPEED: f32 = 120.0;
 const GRAVITY: f32 = 1100.;
-const JUMP_IMPULSE: f32 = 320.0;
+const JUMP_IMPULSE: f32 = 400.0;
 const LIFT_HEIGHT: f32 = 200.;
 const GROUND_LEVEL: f32 = 0.;
 

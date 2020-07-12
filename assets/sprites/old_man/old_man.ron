@@ -202,9 +202,9 @@ Prefab(
                                         SpriteIndex,
                                         (
                                             // Time of key frames
-                                            input: [0.0, 0.33, 0.66, 1.0],
+                                            input: [0.0, 0.05],
                                             // Sprite indexes from SpriteSheet for key frames
-                                            output: [20, 21, 22],
+                                            output: [21],
                                             // Sprites can only ever be animated with Step
                                             function: Step,
                                         ),
@@ -225,7 +225,7 @@ Prefab(
                                             // Time of key frames
                                             input: [0.0, 1.0],
                                             // Sprite indexes from SpriteSheet for key frames
-                                            output: [23],
+                                            output: [22],
                                             // Sprites can only ever be animated with Step
                                             function: Step,
                                         ),
@@ -244,9 +244,9 @@ Prefab(
                                         SpriteIndex,
                                         (
                                             // Time of key frames
-                                            input: [0.0, 1.0],
+                                            input: [0.0, 0.06, 0.10],
                                             // Sprite indexes from SpriteSheet for key frames
-                                            output: [24],
+                                            output: [23, 24],
                                             // Sprites can only ever be animated with Step
                                             function: Step,
                                         ),
