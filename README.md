@@ -2,6 +2,8 @@
 
 A 2D-platformer demo-game written on Rust and based on Amethyst game engine. Created mainly as an sandbox for learning Rust-laguage and exploring Amethyst game-engine.
 
+![image](https://github.com/AskePit/askepit.github.io/blob/master/dustnrust_screen.png)
+
 ## How to run
 
 To run the game, run the following command, which defaults to the `vulkan` graphics backend:
