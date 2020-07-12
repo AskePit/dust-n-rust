@@ -1,13 +1,15 @@
 (
   axes: {
-    Move: Emulated(pos: Key(Right), neg: Key(Left)),
+    Move: Emulated(pos: Key(D), neg: Key(A)),
+    CameraMoveX: Emulated(pos: Key(Right), neg: Key(Left)),
+    CameraMoveY: Emulated(pos: Key(Up), neg: Key(Down)),
   },
   actions: {
       AnimChange: [
           [Key(Space)]
       ],
       Jump: [
-          [Key(Up)]
+          [Key(W)]
       ],
       Lift: [
           [Key(L)]

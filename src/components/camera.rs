@@ -13,13 +13,15 @@ use amethyst::{
 #[storage(DenseVecStorage)]
 pub struct CameraMotion
 {
-	pub velocity: Point2<f32>,
+    pub velocity: Point2<f32>,
+    pub player_offset: Point2<f32>,
 }
 
 impl Default for CameraMotion {
 	fn default() -> Self {
 		CameraMotion {
-			velocity: Point2::new(0.0, 0.0),
+            velocity: Point2::new(0.0, 0.0),
+            player_offset: Point2::new(0.0, 0.0),
 		}
 	}
 }

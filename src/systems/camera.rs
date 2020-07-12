@@ -1,7 +1,8 @@
 use amethyst::{
-    ecs::{Join, System, WriteStorage, ReadStorage},
+    ecs::{Join, System, WriteStorage, ReadStorage, Read},
 	core::transform::Transform,
 	core::math::Translation3,
+	core::timing::Time,
 	renderer::camera::Camera,
 };
 
@@ -11,7 +12,15 @@ use crate::{
 		CameraMotion,
 		LevelLayerComponent,
 	},
+	utils::{
+		non_zero
+	}
 };
+
+pub const SPEED: f32 = 250.0;
+pub const RETURN_SPEED: f32 = 450.0;
+pub const MAX_X_ARM: f32 = 300.0;
+pub const MAX_Y_ARM: f32 = 150.0;
 
 #[derive(Default)]
 pub struct CameraMotionSystem;
@@ -20,12 +29,13 @@ impl<'s> System<'s> for CameraMotionSystem {
     type SystemData = (
 		WriteStorage<'s, Transform>,
 		ReadStorage<'s, Camera>,
-		ReadStorage<'s, CameraMotion>,
+		WriteStorage<'s, CameraMotion>,
 		ReadStorage<'s, Player>,
+		Read<'s, Time>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-		let (mut transforms, cameras, _camera_motions, players) = data;
+		let (mut transforms, cameras, mut camera_motions, players, time) = data;
 
 		let mut target_transform: Option<Transform> = None;
 		{
@@ -65,6 +75,55 @@ impl<'s> System<'s> for CameraMotionSystem {
 
 		if target_transform.translation().x + camera_half_width > 1200.0*2.0 {
 			target_transform.set_translation_x(1200.0*2.0 - camera_half_width);
+		}
+
+		// camera shift
+		let mut camera_motion: Option<&mut CameraMotion> = None;
+		{
+			for motion in (&mut camera_motions).join() {
+				camera_motion = Some(motion);
+				break;
+			}
+		}
+
+		let camera_motion = match camera_motion {
+			Some(t) => t,
+			None => return,
+		};
+
+		// camera arm motion
+		{
+			let dt = time.delta_seconds();
+
+			let velocity = &camera_motion.velocity;
+			let offset = &mut camera_motion.player_offset;
+
+			// camera move from player
+			if non_zero(velocity.x) || non_zero(velocity.y) {
+				offset.x += velocity.x * dt;
+				offset.y += velocity.y * dt;
+
+				offset.x = offset.x.min(MAX_X_ARM).max(-MAX_X_ARM);
+				offset.y = offset.y.min(MAX_Y_ARM).max(-MAX_Y_ARM);
+			// camera return back to player
+			} else if non_zero(offset.x) || non_zero(offset.y) {
+				let len = (offset.x*offset.x + offset.y*offset.y).sqrt();
+				let new_len = (len - RETURN_SPEED*dt).max(0.0);
+				let ratio = new_len / len;
+				offset.x *= ratio;
+				offset.y *= ratio;
+			}
+
+			target_transform.prepend_translation_x(offset.x);
+			target_transform.prepend_translation_y(offset.y);
+
+			if target_transform.translation().x - camera_half_width < 0.0 {
+				target_transform.set_translation_x(camera_half_width);
+			}
+
+			if target_transform.translation().x + camera_half_width > 1200.0*2.0 {
+				target_transform.set_translation_x(1200.0*2.0 - camera_half_width);
+			}
 		}
 
 		camera_transform.set_translation(*target_transform.translation());

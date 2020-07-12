@@ -64,6 +64,11 @@ fn main() -> amethyst::Result<()> {
             &["animation_control_system"],
         )
         .with(
+            CameraInputSystem::default(),
+            "camera_input_system",
+            &["animation_control_system"],
+        )
+        .with(
             LocomotionSystem,
             "locomotion_system",
             &["player_input_system"],

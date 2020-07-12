@@ -8,12 +8,15 @@ use amethyst::{
 
 use serde::{Serialize, Deserialize};
 
-use crate::components::{Locomotion, Player};
-use crate::systems::locomotion::SPEED;
+use crate::components::{Locomotion, Player, CameraMotion};
+use crate::systems::locomotion;
+use crate::systems::camera;
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AxisBinding {
     Move,
+    CameraMoveX,
+    CameraMoveY,
 }
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
@@ -84,7 +87,7 @@ impl<'s> System<'s> for PlayerInputSystem {
             // axises
             {
                 let move_input = input.axis_value(&AxisBinding::Move).expect("Move action exists");
-                locomotion.velocity.x = move_input * SPEED;
+                locomotion.velocity.x = move_input * locomotion::SPEED;
             }
 
             // actions
@@ -109,48 +112,24 @@ impl<'s> System<'s> for PlayerInputSystem {
     }
 }
 
-/*
 #[derive(Default)]
 pub struct CameraInputSystem;
 
 impl<'s> System<'s> for CameraInputSystem {
     type SystemData = (
-        ReadStorage<'s, Player>,
-        WriteStorage<'s, Locomotion>,
+        WriteStorage<'s, CameraMotion>,
         Read<'s, InputHandler<InputBindingTypes>>,
-        Read<'s, Time>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (_players, mut motions, input, time) = data;
+        let (mut motions, input) = data;
 
-        for locomotion in (&mut motions).join() {
+        for camera_motion in (&mut motions).join() {
+            let move_x = input.axis_value(&AxisBinding::CameraMoveX).expect("CameraMoveX action exists");
+            camera_motion.velocity.x = move_x * camera::SPEED;
 
-            // axises
-            {
-                let move_input = input.axis_value(&AxisBinding::Move).expect("Move action exists");
-                locomotion.velocity.x = move_input * SPEED;
-            }
-
-            // actions
-            {
-                if !self.advance_actions_cooldown(time.delta_seconds()) {
-                    return;
-                }
-
-                if input.action_is_down(&ActionBinding::Jump).expect("Jump action exists") && locomotion.grounded
-                {
-                    locomotion.jump_trigger = true;
-                    self.set_actions_cooldown();
-                }
-
-                if input.action_is_down(&ActionBinding::Lift).expect("Lift action exists")
-                {
-                    locomotion.lift_trigger = true;
-                    self.set_actions_cooldown();
-                }
-            }
+            let move_y = input.axis_value(&AxisBinding::CameraMoveY).expect("CameraMoveY action exists");
+            camera_motion.velocity.y = move_y * camera::SPEED;
         }
     }
 }
-*/

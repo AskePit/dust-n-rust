@@ -36,3 +36,20 @@ where
 
 	None
 }
+
+pub fn almost_zero(x: f32) -> bool
+{
+	x.abs() <= f32::EPSILON
+}
+
+pub fn non_zero(x: f32) -> bool
+{
+	!almost_zero(x)
+}
+
+/*
+pub fn almost_equal(x: f32, y: f32) -> bool
+{
+	(x - y) <= f32::EPSILON
+}
+*/
