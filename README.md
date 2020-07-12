@@ -1,4 +1,6 @@
-# dust
+# dust n rust
+
+A 2D-platformer demo-game written on Rust and based on Amethyst game engine. Created mainly as an sandbox for learning Rust-laguage and exploring Amethyst game-engine.
 
 ## How to run
 
